@@ -1,7 +1,7 @@
 import numpy as np
 
 from keras.datasets import imdb
-from keras import models, layers, optimizers, regularizers
+from keras import models, layers, optimizers
 
 import matplotlib.pyplot as plt
 
@@ -31,10 +31,10 @@ if __name__ == '__main__':
     y_test = np.asarray(test_labels).astype('float32')
 
     model = models.Sequential()
-    model.add(layers.Dense(16, activation='relu', input_shape=(10000,),
-                           kernel_regularizer=regularizers.l2(0.001)))
-    model.add(layers.Dense(16, activation='relu',
-                           kernel_regularizer=regularizers.l2(0.001)))
+    model.add(layers.Dense(16, activation='relu', input_shape=(10000,)))
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(16, activation='relu'))
+    model.add(layers.Dropout(0.5))
     model.add(layers.Dense(1, activation='sigmoid'))
 
     model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics='accuracy')
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     val_loss_values = history_dict['val_loss']
 
     epoch = range(1, len(loss_values)+1)
-    plt.plot(epoch, loss_values, 'o', label= 'regularizer')
+    plt.plot(epoch, loss_values, 'o', label= 'dropout')
     plt.plot(epoch, val_loss_values, '--', label= 'training')
     plt.legend()
     plt.show()
