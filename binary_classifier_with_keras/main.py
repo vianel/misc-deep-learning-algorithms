@@ -1,7 +1,7 @@
 import numpy as np
 
 from keras.datasets import imdb
-from keras import models, layers, optimizers
+from keras import models, layers, optimizers, regularizers
 
 import matplotlib.pyplot as plt
 
@@ -31,8 +31,10 @@ if __name__ == '__main__':
     y_test = np.asarray(test_labels).astype('float32')
 
     model = models.Sequential()
-    model.add(layers.Dense(16, activation='relu', input_shape=(10000,)))
-    model.add(layers.Dense(16, activation='relu'))
+    model.add(layers.Dense(16, activation='relu', input_shape=(10000,),
+                           kernel_regularizer=regularizers.l2(0.001)))
+    model.add(layers.Dense(16, activation='relu',
+                           kernel_regularizer=regularizers.l2(0.001)))
     model.add(layers.Dense(1, activation='sigmoid'))
 
     model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics='accuracy')
@@ -43,7 +45,7 @@ if __name__ == '__main__':
     y_val = y_train[:10000]
     partial_y_val = y_train[10000:]
 
-    history = model.fit(partial_x_train, partial_y_val, epochs=4, batch_size=512, validation_data=(x_val, y_val))
+    history = model.fit(partial_x_train, partial_y_val, epochs=20, batch_size=512, validation_data=(x_val, y_val))
 
     history_dict = history.history
 
@@ -51,7 +53,7 @@ if __name__ == '__main__':
     val_loss_values = history_dict['val_loss']
 
     epoch = range(1, len(loss_values)+1)
-    plt.plot(epoch, loss_values, 'o', label= 'training')
+    plt.plot(epoch, loss_values, 'o', label= 'regularizer')
     plt.plot(epoch, val_loss_values, '--', label= 'training')
     plt.legend()
     plt.show()
